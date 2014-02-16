@@ -22,10 +22,22 @@ Door.prototype = Object.create(PIXI.Sprite.prototype);
 Door.prototype.constructor = Door;
 Door.prototype.texture = PIXI.Texture.fromImage('sprites/door.png');
 
+
+
+function Action() {}
 Action.prototype.start = function() {};
 Action.prototype.sustain = function() {};
 Action.prototype.end = function() {};
 
+Action.prototype.setPressed = Item.prototype.setPressed = function(pressed) {
+  if(this.callback) this.callback(!!pressed);
+  if(this.sustain && this.pressed && pressed)  this.sustain();
+  if(this.end && this.pressed && !pressed) this.end();
+  if(this.start && !this.pressed && pressed) this.start();
+  this.pressed = !!pressed;
+};
+
+/*
 function Smash(player) {
   Action.call(this, player);
 }
@@ -66,8 +78,7 @@ Smash.prototype.end = function() {
   dmg *= this.power;
   hit(enemies, sprite.position.x, sprite.position.y, 32 * this.power, dmg);
 };
-
-function Action() {}
+*/
 
 var stats = ['life', 'armor', 'damage', 'speed'];
 
@@ -100,20 +111,11 @@ function Item(texture, name, type, anchorX, anchorY) {
 Item.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 Item.prototype.constructor = Item;
 
-Action.prototype.setPressed = Item.prototype.setPressed = function(pressed) {
-  if(this.callback) this.callback(!!pressed);
-  if(this.sustain && this.pressed && pressed)  this.sustain();
-  if(this.end && this.pressed && !pressed) this.end();
-  if(this.start && !this.pressed && pressed) this.start();
-  this.pressed = !!pressed;
-};
-
 
 function Shirt(name) {
   Item.call(this, this.texture, name, 'body');
   this.off_y = -43;
 }
-
 Shirt.prototype = Object.create(Item.prototype);
 Shirt.prototype.constructor = Shirt;
 Shirt.prototype.texture = PIXI.Texture.fromImage('sprites/shirt.png');
